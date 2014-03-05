@@ -29,6 +29,7 @@ N =
 """
 
 # The Martin flow
+plt.subplot(121)
 Nm = np.load("./results/martin.npz")
 Fm = np.load("./results/martin_flows.npy")
 
@@ -39,4 +40,15 @@ plt.plot(x,Bc/aLn,'*')
 plt.xlabel('Node')
 plt.ylabel(r'$B_c/\langle L_n\rangle$')
 plt.title('Capped Martin flow')
-plt.savefig('bcm.eps')
+
+# Rolando flow
+plt.subplot(122)
+Nr = np.load("./results/rolando.npz")
+Fr = np.load("./results/rolando_flows.npy")
+
+Bcr = np.max(Nr['balancing'])
+aLnr = np.mean(Nr['load'],1)
+plt.plot(x,Bcr/aLnr,'*')
+plt.xlabel('Node')
+plt.title('Capped Rolando flow')
+plt.savefig('bc.eps')
