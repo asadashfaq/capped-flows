@@ -75,7 +75,7 @@ if 'plot' in task:
     plotter('martin')
     plotter('rolando')
     plt.xlabel('Tc [TW]')
-    plt.ylabel('Bc normalised to 99 quantile of total EU load')
+    plt.ylabel('Bc normalised to total EU load')
     plt.title('Capped flows on EU grid')
     plt.legend(('Max Martin','99 Q Martin','Max Rolando','99 Q Rolando'),loc=1)
     plt.savefig('bctc_martin_rolando.eps')
