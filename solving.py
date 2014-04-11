@@ -24,8 +24,9 @@ else:
     task = str(sys.argv[1])
     mode = str(sys.argv[2:])
     if (('solve' not in task ) and ('plot' not in task)):
-        raise Exception('Wrong task selected!')
-    if (('solve' in task) and ('martin' not in mode) and ('rolando' not in mode)):
+        raise Exception('No task selected!')
+    if (('solve' in task) and ('martin' not in mode) and ('rolando' not in mode)\
+        and ('linear' not in mode) and ('square' not in mode)):
         raise Exception('No implementation selected!')
 
 # Scaling factor for transmission capacities
@@ -36,6 +37,10 @@ def plotter(mode):
         col = ['ob','og']
     if mode == 'rolando':
         col = ['oc','oy']
+    if mode == 'linear':
+        col = ['*b','*y']
+    if mode == 'square':
+        col = ['*c','*y']
     mBc = []
     qBc = []
     Tc = []
@@ -69,6 +74,22 @@ if 'solve' in task:
             N,F = au.solve(N,mode='capped rolando verbose',h0=caps,b=b)
             N.save_nodes('rolando-b-'+str(b))
             np.save('./results/rolandoflows-b-'+str(b),F)
+
+    # Linear flow
+    if 'linear' in mode:
+        print 'Solving linear flow'
+        for b in a:
+            N,F = au.solve(N,mode='linear verbose',h0=caps,b=b)
+            N.save_nodes('linear-b-'+str(b))
+            np.save('./results/linearflows-b-'+str(b),F)
+    
+    # Square flow
+    if 'square' in mode:
+        print 'Solving square flow'
+        for b in a:
+            N,F = au.solve(N,mode='square verbose',h0=caps,b=b)
+            N.save_nodes('square-b-'+str(b))
+            np.save('./results/squareflows-b-'+str(b),F)
 
 if 'plot' in task:
     print 'Plotting flows'
