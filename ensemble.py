@@ -45,14 +45,15 @@ a = np.linspace(0,2,41)
 b = 0.25
 
 # Rolando flow
-runs = 2
+runs = 10
+print 'Doing '+str(runs)+' ensemble runs.'
 Bc = np.zeros((len(N),runs))
 B99 = np.zeros((len(N),runs))
+lapse = np.arange(0,70128)
 for i in range(runs):
-    lapse = np.arange(0,70128)
     lapse = np.random.shuffle(lapse)
-    N,F = au.solve(N,mode='capped rolando verbose',h0=caps,b=b,lapse=lapse)
-    N.save_nodes('random-rolando1-'+str(i))
+    N,F = au.solve(N,mode='capped random rolando verbose',h0=caps,b=b,lapse=lapse)
+#    N.save_nodes('random1-rolando-'+str(i))
     for n in N:
         Bc[n.id,i] = np.max(n.balancing)
         B99[n.id,i] = get_q(n.balancing,.99)
@@ -61,22 +62,12 @@ for i in range(runs):
 Bcm = np.mean(Bc,1)
 B99m = np.mean(B99,1)
 
-# Check for consistency
-BEU = np.sum(Bcm,0)
-print 'Total EU balancing capacity',BEU
+# Saving results for second run
+np.savez('bc-ensemble-mean.npz',Bc=Bcm,B99=B99m,)
 
-# put mean Bc as initial condition for a second run
-#for b in a:
-#    N,F = au.solve(N,mode='capped rolando verbose',h0=caps,b=b)
-#    N.save_nodes('rolando-b-'+str(b))
-#    np.save('./results/rolandoflows-b-'+str(b),F)
-
-#if 'plot' in task:
-#    print 'Plotting flows'
-#    plotter('martin')
-#    plotter('rolando')
-#    plt.xlabel('Tc [TW]')
-#    plt.ylabel('Bc normalised to total EU load')
-#    plt.title('Capped flows on EU grid')
-#    plt.legend(('Max Martin','99 Q Martin','Max Rolando','99 Q Rolando'),loc=1)
-#    plt.savefig('bctc_martin_rolando.eps')
+# Second run with ensemble means as initial balancin capacities
+print 'Doing second run with means.'
+for b in a:
+    N,F = au.solve(N,mode='capped random mean rolando verbose',h0=caps,b=b)
+    N.save_nodes('random2-rolando-b-'+str(b))
+    np.save('./results/random-rolandoflows-b-'+str(b),F)
