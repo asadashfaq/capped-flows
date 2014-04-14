@@ -23,7 +23,7 @@ def run(b):
     caps = get_quant_caps(quant=.99)
     
     # Multiple Rolando flows to be averaged
-    runs = 2
+    runs = 10
     Bc = np.zeros((len(N),runs))
     B99 = np.zeros((len(N),runs))
     for i in range(runs):
