@@ -36,11 +36,13 @@ def plotter(mode):
     if mode == 'martin':
         col = ['ob','og']
     if mode == 'rolando':
-        col = ['oc','oy']
+        col = ['*b','*g']
     if mode == 'linear':
-        col = ['*b','*y']
+        col = ['sb','sg']
     if mode == 'square':
-        col = ['*c','*y']
+        col = ['pb','pg']
+    if mode == 'random-rolando':
+        col = ['hb','hg']
     mBc = []
     qBc = []
     Tc = []
@@ -51,8 +53,8 @@ def plotter(mode):
         mBc.append(np.sum(np.max(n.balancing) for n in N)/Tload)
         qBc.append(np.sum(get_q(n.balancing,.99) for n in N)/Tload)
         Tc.append(sum(biggestpair(np.max(abs(F),1)))/1e6)
-    plt.plot(Tc,mBc,str(col[0]))
-    plt.plot(Tc,qBc,str(col[1]))
+    ax.plot(Tc,mBc,str(col[0]))
+    ax.plot(Tc,qBc,str(col[1]))
 
 if 'solve' in task:
     # Load data and get flow quantiles
@@ -93,10 +95,29 @@ if 'solve' in task:
 
 if 'plot' in task:
     print 'Plotting flows'
+    fig = plt.figure()
+    ax = plt.subplot(111)
     plotter('martin')
     plotter('rolando')
+    plotter('square')
+    plotter('linear')
+    plotter('random-rolando')
     plt.xlabel('Tc [TW]')
     plt.ylabel('Bc normalised to total EU load')
     plt.title('Capped flows on EU grid')
-    plt.legend(('Max Martin','99 Q Martin','Max Rolando','99 Q Rolando'),loc=1)
-    plt.savefig('bctc_martin_rolando.eps')
+    plt.legend(\
+            ('Max Martin','99Q Martin',\
+            'Max Rolando','99Q Rolando',\
+            'Max square','99Q square',\
+            'Max linear','99Q linear',\
+            'Max E Rolando','99Q E Rolando'),\
+            loc='center left', bbox_to_anchor=(1, 0.5))
+
+    # Shrink current axis by 20%
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.75, box.height])
+
+    # Put a legend to the right of the current axis
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    
+    plt.savefig('bctc_all.eps')
