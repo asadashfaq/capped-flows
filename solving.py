@@ -31,6 +31,8 @@ else:
 
 # Scaling factor for transmission capacities
 a = np.linspace(0,2,41)
+# Scaling factor for transmission capacities used in the ensembles
+ae = [0.0, 0.25, 0.35, 0.5, 0.7, 1.0]
 
 def plotter(mode):
     if mode == 'martin':
@@ -42,7 +44,8 @@ def plotter(mode):
     if mode == 'square':
         col = ['pb','pg']
     if mode == 'random-rolando':
-        col = ['hb','hg']
+        col = ['hy','hr']
+        a = ae
     mBc = []
     qBc = []
     Tc = []
