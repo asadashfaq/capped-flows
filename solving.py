@@ -5,7 +5,6 @@ import sys
 import aurespf.solvers as au
 import numpy as np
 from pylab import plt
-from multiprocessing import pool
 from aurespf.tools import *
 from grid import *
 
@@ -35,6 +34,8 @@ a = np.linspace(0,2,41)
 ae = [0.0, 0.25, 0.35, 0.5, 0.7, 1.0]
 
 def plotter(mode):
+    a = np.linspace(0,2,41)
+    ae = [0.0, 0.25, 0.35, 0.5, 0.7, 1.0]
     if mode == 'martin':
         col = ['ob','og']
     if mode == 'rolando':
@@ -98,12 +99,13 @@ if 'solve' in task:
 
 if 'plot' in task:
     print 'Plotting flows'
-    modes = ['martin','rolando','square','linear','random-rolando']
     fig = plt.figure()
     ax = plt.subplot(111)
-    # Plot of data on multiple cores
-    p = Pool(5)
-    p.map(plotter,modes)
+    plotter('martin')
+    plotter('rolando')
+    plotter('square')
+    plotter('linear')
+    plotter('random-rolando')
     plt.xlabel('Tc [TW]')
     plt.ylabel('Bc normalised to total EU load')
     plt.title('Capped flows on EU grid')
