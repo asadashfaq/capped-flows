@@ -5,7 +5,7 @@ import sys
 import aurespf.solvers as au
 import numpy as np
 from pylab import plt
-import multiprocessing as mp
+from multiprocessing import pool
 from aurespf.tools import *
 from grid import *
 
@@ -98,13 +98,12 @@ if 'solve' in task:
 
 if 'plot' in task:
     print 'Plotting flows'
+    modes = ['martin','rolando','square','linear','random-rolando']
     fig = plt.figure()
     ax = plt.subplot(111)
-    plotter('martin')
-    plotter('rolando')
-    plotter('square')
-    plotter('linear')
-    plotter('random-rolando')
+    # Plot of data on multiple cores
+    p = Pool(5)
+    p.map(plotter,modes)
     plt.xlabel('Tc [TW]')
     plt.ylabel('Bc normalised to total EU load')
     plt.title('Capped flows on EU grid')
