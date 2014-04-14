@@ -15,7 +15,7 @@ of the time dependence.
 """
 
 # Scaling factor for transmission capacities
-a = [0.0, 0.25, 0.35, 0.5, 0.7, 1.0]
+a = [0.0, 0.05, 0.1, 0.25, 0.35, 0.5, 0.7, 1.0]
 
 def run(b):
     # Load data and get flow quantiles
@@ -47,5 +47,5 @@ def run(b):
     np.save('./results/random-rolandoflows-b-'+str(b),F)
 
 # Solve on multiple cores
-p = Pool(6)
+p = Pool(8)
 p.map(run,a)

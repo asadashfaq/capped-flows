@@ -31,11 +31,9 @@ else:
 # Scaling factor for transmission capacities
 a = np.linspace(0,2,41)
 # Scaling factor for transmission capacities used in the ensembles
-ae = [0.0, 0.25, 0.35, 0.5, 0.7, 1.0]
+ae = [0.0, 0.05, 0.1, 0.25, 0.35, 0.5, 0.7, 1.0]
 
-def plotter(mode):
-    a = np.linspace(0,2,41)
-    ae = [0.0, 0.25, 0.35, 0.5, 0.7, 1.0]
+def plotter(mode,a,ae):
     if mode == 'martin':
         col = ['ob','og']
     if mode == 'rolando':
@@ -101,11 +99,11 @@ if 'plot' in task:
     print 'Plotting flows'
     fig = plt.figure()
     ax = plt.subplot(111)
-    plotter('martin')
-    plotter('rolando')
-    plotter('square')
-    plotter('linear')
-    plotter('random-rolando')
+    plotter('martin',a,ae)
+    plotter('rolando',a,ae)
+    plotter('square',a,ae)
+    plotter('linear',a,ae)
+    plotter('random-rolando',a,ae)
     plt.xlabel('Tc [TW]')
     plt.ylabel('Bc normalised to total EU load')
     plt.title('Capped flows on EU grid')
@@ -117,7 +115,7 @@ if 'plot' in task:
             'Max E Rolando','99Q E Rolando'),\
             loc='center left', bbox_to_anchor=(1, 0.5))
 
-    # Shrink current axis by 20%
+    # Shrink current axis by 25% to make room for legend
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.75, box.height])
 
