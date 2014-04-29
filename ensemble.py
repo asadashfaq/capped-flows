@@ -15,7 +15,7 @@ of the time dependence.
 """
 
 # Scaling factor for transmission capacities
-a = [0.0, 0.05, 0.1, 0.25, 0.35, 0.5, 0.7, 1.0]
+a = np.linspace(0,2,41)
 
 def run(b):
     # Load data and get flow quantiles
@@ -29,7 +29,7 @@ def run(b):
     for i in range(runs):
         lapse = np.arange(0,70128)
         np.random.shuffle(lapse)
-        N,F = au.solve(N,mode='capped random rolando',h0=caps,b=b,lapse=lapse)
+        N,F = au.solve(N,mode='capped random rolando verbose',h0=caps,b=b,lapse=lapse)
         for n in N:
             Bc[n.id,i] = np.max(n.balancing)
             B99[n.id,i] = get_q(n.balancing,.99)
@@ -40,9 +40,11 @@ def run(b):
 
     # Saving results for second run
     np.savez('./results/bc-ensemble-mean-b-'+str(b)+'.npz',Bc=Bcm,B99=B99m,)
+    # Saving results for use in barplot.py
+    np.savez('./results/bc-ensemble-b-'+str(b)+'.npz',Bc=Bc,B99=B99,)
 
     # Second run with ensemble means as initial balancing capacities
-    N,F = au.solve(N,mode='capped random mean rolando',h0=caps,b=b,lapse=lapse)
+    N,F = au.solve(N,mode='capped random mean rolando verbose',h0=caps,b=b,lapse=lapse)
     N.save_nodes('random-rolando-b-'+str(b))
     np.save('./results/random-rolandoflows-b-'+str(b),F)
 
