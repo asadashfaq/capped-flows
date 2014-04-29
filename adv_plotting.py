@@ -17,10 +17,7 @@ plotter(mode,Bc,Tc,q)
 """
 
 # Scaling factor for transmission capacities
-a = np.linspace(0,.1,3) # np.linspace(0,2,41)
-
-# Scaling factor for transmission capacities used in the ensembles
-ae = [0.0, 0.05, 0.1]#, 0.25, 0.35, 0.5, 0.7, 1.0]
+a = np.linspace(0,2,41)
 
 # Quantiles to be plotted
 q = [1, .999, .995, .99, .98, .95]
@@ -28,13 +25,9 @@ q = [1, .999, .995, .99, .98, .95]
 # Modes to be plotted:
 modes = ['martin','linear','square','random-rolando']
 
-def loader(mode,a,ae,Q):
-    if mode == 'random-rolando':
-        Bc = np.zeros((len(ae),len(Q)))
-        Tc = np.zeros((len(ae),len(Q)))
-    else:
-        Bc = np.zeros((len(a),len(Q)))
-        Tc = np.zeros((len(a),len(Q)))
+def loader(mode,a,Q):
+    Bc = np.zeros((len(a),len(Q)))
+    Tc = np.zeros((len(a),len(Q)))
     for i,b in enumerate(a):
         N = EU_Nodes(str(mode)+'-b-'+str(b)+'.npz')
         F = np.load('./results/'+str(mode)+'flows-b-'+str(b)+'.npy')
@@ -65,12 +58,12 @@ def plotter(mode,Bc,Tc,Q):
     plt.savefig('figures/bctc_'+str(mode)+'.eps')
 
 def plot_all(Bc,Tc,Q):
-#    col = ['#000080','#0000FF','#4169E1','#6495ED','#00BFFF','#B0E0E6']
-    col = ['-*r','-g','-b','-m']
+    col = ['#000080','#0000FF','#4169E1','#6495ED','#00BFFF','#B0E0E6']
+#    col = ['-r','-g','-b','-m']
     plt.figure()
     ax = plt.subplot(111)
     for p in range(Bc.shape[1]):
-        plt.plot(Tc[:,p],Bc[:,p],str(col[p]))
+        plt.plot(Tc[:,p],Bc[:,p],'-',color=str(col[p]))
     plt.xlabel('Tc [TW]')
     plt.ylabel('Bc normalised to total EU load')
     plt.title('Comparison')
@@ -81,7 +74,7 @@ def plot_all(Bc,Tc,Q):
 
     plt.legend(\
         ([str(modes[i]) for i in range(len(modes))]),\
-        loc='center left', bbox_to_anchor=(1, 0.5),title='99.9% quantiles')
+        loc='center left', bbox_to_anchor=(1, 0.5),title=r'$99.9\%$ quantiles')
     
     plt.savefig('figures/bctc_all.eps')
 
@@ -89,13 +82,10 @@ def plot_all(Bc,Tc,Q):
 BcT = np.zeros((len(a),len(modes)))
 TcT = np.zeros((len(a),len(modes)))
 for k,m in enumerate(modes):
-    B,T = loader(m,a,ae,q)
+    B,T = loader(m,a,q)
     plotter(m,B,T,q)
 
-# need support for plotting one figure with 99.9% for all schemes
+# One figure with 99.9% quantiles for all schemes
     BcT[:,k] = B[:,1]
     TcT[:,k] = T[:,1]
-
 plot_all(BcT,TcT,q)
-
-# need support for a bar plot of the distribution of Bc for each country.
