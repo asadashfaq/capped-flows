@@ -11,6 +11,7 @@ Plots the distribution of each country's balancing capacity.
 b = 0.3
 q = .99
 
+# Loading of data
 N = np.load('./results/random-rolando-b-'+str(b)+'.npz')
 B = np.load('./results/bc-ensemble-b-'+str(b)+'.npz')
 
@@ -22,6 +23,7 @@ meanloadEU = np.mean(meanload)
 Bc = B['Bc']
 B99 = B['B99']
 
+# Bar plot for 99% quantiles
 means = np.mean(B99,1)
 meanEU = np.mean(means)
 
@@ -43,6 +45,7 @@ plt.plot(x,normmeans,'ob')
 plt.plot([x,x],[mins,maxs],'-r',linewidth=2)
 plt.ylabel('Balancing capacities normalised to average load')
 
+# Bar plot for 100% quantiles
 means = np.mean(Bc,1)
 meanEU = np.mean(means)
 
@@ -65,4 +68,3 @@ plt.plot(x,normmeans,'ob')
 plt.plot([x,x],[mins,maxs],'-r',linewidth=2)
 plt.ylabel('Balancing capacities normalised to average load')
 plt.show()
-
