@@ -1,10 +1,10 @@
 Capped-flows and export schemes
 ============
+Comparison of different different export schemes on the European grid:
+linear, square, martin, rolando (old capped) and an ensemble of randomised
+hours with the rolando scheme.
 
-Different implementations of capped flow and other export schemes on the European grid.
-
-The submodule used is not the main branch of "aurespf". It is the branch
-"additional-capped-flow-implementations" by Magnus and Bo.
+Now working on generalised flow tracing with vector coloring for each country.
 
 Files:
 ------
@@ -13,4 +13,4 @@ Files:
 - ensemble.py: solving a randomised ensemble of the old capped flow.
 - plots.py: Old plotting. Should not be used.
 - adv_plotting.py: Making a lot of pretty figures for Martin's paper
-
+- tracer.py: vectorised flow tracing (work in progress)
