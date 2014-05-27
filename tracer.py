@@ -5,20 +5,28 @@ from aurespf.tools import AtoKh_old
 Algorithm for tracing the vectorised flow of electricity.
 """
 
-def get_links(node_id,matr):
+def get_links(node_id,admat):
     """
     Create a list of links for each node. Links are given a unique number
-    and an integer to indicate direction.
+    and a +/- 1 to indicate direction.
+    Also return a dictionary for in- and outflows containing link number
+    and the connected node. This gets very useful later on.
     """
-	links=[]
-	linkno=-1
-	for j in range(len(matr[node_id])):
-		for i in range(len(matr[node_id])):
-			if matr[i][j]>0 and i>j:
-				linkno+=1
-				if node_id==i: links.append([linkno,-1])
-				if node_id==j: links.append([linkno,1])
-	return links
+    links=[]
+    linkno=-1
+    indexi={}
+    indexo={}
+    for i in range(len(admat[node_id])):
+        for j in range(len(admat[node_id])):
+            if admat[j][i]>0 and j>i:
+                linkno+=1
+                if node_id==j:
+                    links.append([linkno,-1])
+                    indexi[linkno] = j
+                if node_id==i:
+                    links.append([linkno,1])
+                    indexo[linkno] = j
+	return links,indexi,indexo
 
 def tracer(N,F,pathadmat=None,lapse=None):
     """
@@ -29,13 +37,15 @@ def tracer(N,F,pathadmat=None,lapse=None):
                 # balancing, wind, solar, curtailment, load, storage
 
     if N[0].solved != True :
-        raise Exeption('The loaded nodes object should be solved.')
+        raise Exeption('The loaded nodes object is not solved!')
 
     if pathadmat == None :
         pathadmat = N.pathadmat
     
     if lapse == None:
         lapse = N[0].nhours
+    
+    admat = np.genfromtxt(pathadmat)
 
     """
     Build incidence matrix and create and index of links.
@@ -49,7 +59,7 @@ def tracer(N,F,pathadmat=None,lapse=None):
     contribution to the power mix.
     """
     for n in N:
-        n.links = get_links(n.id,matr)
+        n.links,n.indict,n.outdict= get_links(n.id,admat)
         n.powermix = np.zeros((len(N),colors,lapse))
         n.total_powermix = np.zeros((len(N),colors))
         n.powermix[n.id,0] = n.get_balancing
@@ -62,9 +72,11 @@ def tracer(N,F,pathadmat=None,lapse=None):
     """
     Calculate power mix for every time step in lapse.
     """
-    for t in range(lapse):
+#    for t in range(lapse):
 
     # for each node
     # check for imports on links and add to power mix
 
     # cycle through all nodes until all power mixes are populated
+
+
