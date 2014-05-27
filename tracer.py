@@ -20,7 +20,7 @@ def get_links(node_id,matr):
 				if node_id==j: links.append([linkno,1])
 	return links
 
-def tracer(N,F,admat=None,lapse=None):
+def tracer(N,F,pathadmat=None,lapse=None):
     """
     N and F should be a solved nodes object and corresponding flows,
     respectively.
@@ -31,8 +31,8 @@ def tracer(N,F,admat=None,lapse=None):
     if N[0].solved != True :
         raise Exeption('The loaded nodes object should be solved.')
 
-    if admat == None :
-        admat = N.pathadmat
+    if pathadmat == None :
+        pathadmat = N.pathadmat
     
     if lapse == None:
         lapse = N[0].nhours
@@ -42,11 +42,11 @@ def tracer(N,F,admat=None,lapse=None):
     listflows = ['from','to',id] e.g. ['AT','CH',0].
     All links are counted only once.
     """
-    K,h0,listflows = AtoKh_old(N,pathadmat=admat)
+    K,h0,listflows = AtoKh_old(N,pathadmat=pathadmat)
 
     """
     Make room for the power mixes in the nodes object and add each nodes own
-    contribution to the powermix.
+    contribution to the power mix.
     """
     for n in N:
         n.links = get_links(n.id,matr)
@@ -60,8 +60,11 @@ def tracer(N,F,admat=None,lapse=None):
         n.powermix[n.id,5] = n.get_storage_discharge # charge/discharge: -/+
 
     """
-    Calculate powermix for every time step in lapse.
+    Calculate power mix for every time step in lapse.
     """
     for t in range(lapse):
 
+    # for each node
+    # check for imports on links and add to power mix
 
+    # cycle through all nodes until all power mixes are populated
