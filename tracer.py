@@ -33,18 +33,17 @@ def tracer(N,F,pathadmat=None,lapse=None):
     N and F should be a solved nodes object and corresponding flows,
     respectively.
     """
-    colors = 6  # number of contributors in the vectorised color.
-                # balancing, wind, solar, curtailment, load, storage
+    colors_in = 3   # number of contributors in the vectorised color.
+    colors_out = 4  # balancing, wind, solar, curtailment, load, storage (in/out)
 
-    if N[0].solved != True :
+    if N[0].solved != True:
         raise Exeption('The loaded nodes object is not solved!')
 
-    if pathadmat == None :
-        pathadmat = N.pathadmat
-    
     if lapse == None:
         lapse = N[0].nhours
     
+    if pathadmat == None:
+        pathadmat = N.pathadmat
     admat = np.genfromtxt(pathadmat)
 
     """
@@ -55,19 +54,32 @@ def tracer(N,F,pathadmat=None,lapse=None):
     K,h0,listflows = AtoKh_old(N,pathadmat=pathadmat)
 
     """
-    Make room for the power mixes in the nodes object and add each nodes own
-    contribution to the power mix.
+    Make room for the power mixes in the nodes object. Add each nodes own
+    contribution to the power mix and normalise it to unity.
     """
     for n in N:
         n.links,n.indict,n.outdict= get_links(n.id,admat)
-        n.powermix = np.zeros((len(N),colors,lapse))
-        n.total_powermix = np.zeros((len(N),colors))
-        n.powermix[n.id,0] = n.get_balancing
-        n.powermix[n.id,1] = n.get_wind
-        n.powermix[n.id,2] = n.get_solar
-        n.powermix[n.id,3] = n.get_curtailment
-        n.powermix[n.id,4] = n.load
-        n.powermix[n.id,5] = n.get_storage_discharge # charge/discharge: -/+
+        n.powermix_in = np.zeros((len(N),colors_in,lapse))
+        n.powermix_out = np.zeros((len(N),colors_out,lapse))
+#       n.total_powermix = np.zeros((len(N),colors))
+
+        n.powermix_out[n.id,0] = n.get_balancing
+        n.powermix_out[n.id,1] = n.get_wind
+        n.powermix_out[n.id,2] = n.get_solar
+        n.powermix_in[n.id,0] = n.get_curtailment
+        n.powermix_in[n.id,1] = n.load
+        storage_status = n.get_storage_discharge 
+        if storage_status < 0:
+            n.powermix_in[n.id,2] = storage_status
+        else:
+            n.powermix_out[n.id,3] = storage_status
+
+        pmax_in = np.sum(powermix_in,1)
+        norm_pm_in = [np.divide(powermix_in[i],pmax_in.astype(float)) for i in range(len(powermix_in))]
+        powermix_in = np.array(norm_pm_in).reshape(len(N),colors_in,lapse)
+        pmax_out = np.sum(powermix_out,1)
+        norm_pm_out = [np.divide(powermix_out[i],pmax_out.astype(float)) for i in range(len(powermix_out))]
+        powermix_out = np.array(norm_pm_out).reshape(len(N),colors_out,lapse)
 
     """
     Calculate power mix for every time step in lapse.
